@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des clients{% endblock %}
+
+{% block body %}
+    <div class="flex">
+        <!-- Liste des clients -->
+        <div class="w-2/3 p-6">
+            <div class="flex justify-between items-center mb-3">
+                <h1 class="text-xl text-black font-bold">Liste des Clients</h1>
+            </div>
+
+            <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+                <thead>
+                    <tr class="bg-burgundy">
+                        <th class="py-2 px-4 border-b text-white">Nom</th>
+                        <th class="py-2 px-4 border-b text-white">Prénom</th>
+                        <th class="py-2 px-4 border-b text-white">Téléphone</th>
+                        <th class="py-2 px-4 border-b text-white">Adresse</th>
+                        <th class="py-2 px-4 border-b text-white">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in clients %}
+                        <tr class="bg-nude hover:bg-gray-100">
+                            <td class="py-2 px-4 border-b">{{ client.nom }}</td>
+                            <td class="py-2 px-4 border-b">{{ client.prenom }}</td>
+                            <td class="py-2 px-4 border-b">{{ client.telephone }}</td>
+                            <td class="py-2 px-4 border-b">{{ client.adresse }}</td>
+                            <td class="py-2 px-4 border-b text-center">
+                                <a href="" class="text-grey-500 hover:text-grey-500">
+                                    <i class="fas fa-info-circle" title="Détails"></i>
+                                </a>
+                                <a href="" class="text-burgundy hover:text-burgundy ml-2" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce client ?');">
+                                    <i class="fas fa-trash" title="Supprimer"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="py-2 px-4 text-center">Aucun client trouvé.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="mt-4">
+                {% if totalPages > 1 %}
+                    <nav aria-label="Pagination" class="flex justify-center">
+                        <!-- Lien vers la page précédente -->
+                        {% if currentPage > 1 %}
+                            <a href="{{ path('app_client', { page: currentPage - 1 }) }}" class="px-3 py-1 bg-burgundy text-white rounded hover:bg-gray-300">&laquo</a>
+                        {% endif %}
+
+                        <!-- Lien vers chaque page -->
+                        {% for i in 1..totalPages %}
+                            <a href="{{ path('app_client', { page: i }) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 {% if i == currentPage %} bg-gray-400 {% endif %}">
+                                {{ i }}
+                            </a>
+                        {% endfor %}
+
+                        <!-- Lien vers la page suivante -->
+                        {% if currentPage < totalPages %}
+                            <a href="{{ path('app_client', { page: currentPage + 1 }) }}" class="px-3 py-1 bg-burgundy text-white rounded hover:bg-gray-300">&raquo;</a>
+                        {% endif %}
+                    </nav>
+                {% endif %}
+            </div>      
+        </div>
+
+        <!-- ma parti ajouter -->
+        <div class="w-1/3 p-6 bg-gray-100 rounded-lg">
+            <h2 class="text-xl font-bold text-black mb-3">Ajouter un Client</h2>
+
+            <form action="" method="POST">
+                <div class="mb-2">
+                    <label for="nom" class="block text-gray-700">Nom</label>
+                    <input type="text" id="nom" name="nom" class="w-full border border-gray-300 rounded-md" required>
+                </div>
+
+                <div class="mb-2">
+                    <label for="prenom" class="block text-gray-700">Prénom</label>
+                    <input type="text" id="prenom" name="prenom" class="w-full border border-gray-300 rounded-md" required>
+                </div>
+
+                <div class="mb-2">
+                    <label for="telephone" class="block text-gray-700">Téléphone</label>
+                    <input type="text" id="telephone" name="telephone" class="w-full border border-gray-300 rounded-md" required>
+                </div>
+
+                <div class="mb-2">
+                    <label for="adresse" class="block text-gray-700">Adresse</label>
+                    <input type="text" id="adresse" name="adresse" class="w-full border border-gray-300 rounded-md" required>
+                </div>
+                <button type="submit" class="flex items-center bg-burgundy text-white px-4 py-1 rounded-md hover:bg-red-700">
+                    <span class="mr-2">+</span> Add Client 
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        .bg-burgundy {
+            background-color: #4A0013; /* Couleur rouge bordeaux */
+        }
+        .bg-nude {
+            background-color: rgb(243, 212, 211); /* Couleur rose nude */
+        }
+        .text-grey-500 {
+            color: rgb(48, 48, 48); /* Couleur gris pour l'icône de poubelle */
+        }
+    </style>
+{% endblock %}

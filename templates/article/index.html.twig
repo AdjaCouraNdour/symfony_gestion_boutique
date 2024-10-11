@@ -1,0 +1,53 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des articles{% endblock %}
+
+{% block body %}  
+    <h2 class="text-2xl text-white text-center bg-burgundy font-bold mb-6">Liste des articles</h2>     
+       
+    <div class="flex-1 p-8">   
+        <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+            <thead>
+                <tr class="bg-burgundy">
+                    <th class="py-2 px-4 border-b text-white">ID</th>
+                    <th class="py-2 px-4 border-b text-white">Reference</th>
+                    <th class="py-2 px-4 border-b text-white">Libelle</th>
+                    <th class="py-2 px-4 border-b text-white">qteStock</th>
+                    <th class="py-2 px-4 border-b text-white">Prix</th>
+                    <th class="py-2 px-4 border-b text-white">Etat</th>
+                    <th class="py-2 px-4 border-b text-white">Actions</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for article in articles %}
+                    <tr class="bg-nude hover:bg-gray-100">
+                        <td class="py-2 px-4 border-b">{{ article.id }}</td>
+                        <td class="py-2 px-4 border-b">{{ article.reference }}</td>
+                        <td class="py-2 px-4 border-b">{{ article.libelle }}</td>
+                        <td class="py-2 px-4 border-b">{{ article.qte_stock }}</td>
+                        <td class="py-2 px-4 border-b">{{ article.prix }}</td>
+                        <td class="py-2 px-4 border-b">{{ article.etat }}</td>
+                        <td class="py-2 px-4 border-b">actions</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="py-2 px-4 text-center">Aucun article trouvé.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <style>
+        .bg-burgundy {
+            background-color: #4A0013; /* Couleur rouge bordeaux */
+        }
+        .bg-nude {
+            background-color: rgb(243, 212, 211); /* Couleur rose nude */
+        }
+    </style>
+{% endblock %}
+
+
