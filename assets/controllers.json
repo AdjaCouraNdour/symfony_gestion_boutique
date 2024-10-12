@@ -1,4 +1,9 @@
 {
-    "controllers": [],
+    "controllers": [
+        {
+            "name": "hello",
+            "module": "./controllers/hello_controller.js" 
+        }
+    ],
     "entrypoints": []
 }

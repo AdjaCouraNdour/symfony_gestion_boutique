@@ -50,19 +50,19 @@
                     <nav aria-label="Pagination" class="flex justify-center">
                         <!-- Lien vers la page précédente -->
                         {% if currentPage > 1 %}
-                            <a href="{{ path('app_client', { page: currentPage - 1 }) }}" class="px-3 py-1 bg-burgundy text-white rounded hover:bg-gray-300">&laquo</a>
+                            <a href="{{ path('client.index', { page: currentPage - 1 }) }}" class="px-3 py-1 bg-burgundy text-white rounded hover:bg-gray-300">&laquo</a>
                         {% endif %}
 
                         <!-- Lien vers chaque page -->
                         {% for i in 1..totalPages %}
-                            <a href="{{ path('app_client', { page: i }) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 {% if i == currentPage %} bg-gray-400 {% endif %}">
+                            <a href="{{ path('client.index', { page: i }) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 {% if i == currentPage %} bg-gray-400 {% endif %}">
                                 {{ i }}
                             </a>
                         {% endfor %}
 
                         <!-- Lien vers la page suivante -->
                         {% if currentPage < totalPages %}
-                            <a href="{{ path('app_client', { page: currentPage + 1 }) }}" class="px-3 py-1 bg-burgundy text-white rounded hover:bg-gray-300">&raquo;</a>
+                            <a href="{{ path('client.index', { page: currentPage + 1 }) }}" class="px-3 py-1 bg-burgundy text-white rounded hover:bg-gray-300">&raquo;</a>
                         {% endif %}
                     </nav>
                 {% endif %}

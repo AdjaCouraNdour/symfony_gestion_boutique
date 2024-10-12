@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/heroicons/1.0.5/outline/heroicons-outline.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+   
+    <link rel="stylesheet" href="{{ asset('build/app.css') }}">
+     {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}  <!-- Ajoute le CSS compilé -->
+    {% endblock %}
+    
     <title>Liste des Clients</title>
 </head>
 <body class="bg-gray-100 flex flex-col">
+<div data-controller="hello"></div>
 
     <div class="flex w-full">
         <!-- Menu latéral -->
@@ -18,7 +22,7 @@
 
             <ul>
             <li class="mb-6 mt-12">
-                <a href="{{ path('app_client') }}" class="text-white hover:text-white flex items-center">
+                <a href="{{ path('client.index') }}" class="text-white hover:text-white flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                     </svg>
@@ -26,7 +30,7 @@
                 </a>
             </li>
             <li class="mb-6">
-                <a href="{{ path('app_article') }}" class="text-white hover:text-white flex items-center">
+                <a href="{{ path('article.index') }}" class="text-white hover:text-white flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                     </svg>
@@ -72,7 +76,7 @@
             <!-- Barre de navigation -->
             <nav class="bg-burgundy shadow-md p-4  flex justify-between items-center">
                 <div class="flex items-center">
-                    <img src="file:///mnt/c/Users/KIKI/Pictures/beyonce.jpeg" alt="Photo de l'utilisateur" class="w-10 h-10 rounded-full mr-3">
+                    <img src="{{ asset('images/beyonce.jpeg') }}" alt="Photo de l'utilisateur" class="w-10 h-10 rounded-full mr-3">
                     <div>
                         <p class="text-white font-semibold">NOM ET PRENOM</p>
                         <p class="text-white">EMAIL</p>
@@ -101,5 +105,8 @@
         }
     </style>
     <script src="{{ asset('js/app.js') }}"></script> <!-- Lien vers le JS -->
+     {% block javascripts %}
+        {{ encore_entry_script_tags('app') }}  <!-- Ajoute le JavaScript compilé -->
+    {% endblock %}
 </body>
 </html>

@@ -11,11 +11,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ArticleController extends AbstractController
 {
-    #[Route('/article', name: 'app_article')]
-    public function index(EntityManagerInterface $entityManager, Request $request): Response
+    #[Route('/article', name: 'article.index')]
+    public function index(): Response
     {
         $articles = $entityManager->getRepository(Article::class)->findAll();
-
         return $this->render('article/index.html.twig', [
             'articles' => $articles,
         ]);
