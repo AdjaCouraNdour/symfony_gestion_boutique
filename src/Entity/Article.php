@@ -19,16 +19,15 @@ class Article
     #[ORM\Column(type: "string", length: 100)]
     private ?string $libelle = null;
     
-    #[ORM\Column(type: "decimal", precision: 15, scale: 2)]
+    #[ORM\Column(type: "float", precision: 15, scale: 2)]
     private ?float $qte_stock = null; 
     
-    #[ORM\Column(type: "decimal", precision: 10, scale: 2)]
+    #[ORM\Column(type: "float", precision: 10, scale: 2)]
     private ?float $prix = null; 
     
-    #[ORM\Column(type: "string", length: 100)] 
-    private ?etatArticle $etat = null; 
-
-    // Getters et Setters
+    #[ORM\ManyToOne(targetEntity: EtatArticle::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?EtatArticle $etat = null; 
 
     public function getId(): ?int
     {
@@ -79,12 +78,12 @@ class Article
         return $this;
     }
 
-    public function getEtat(): ?etatArticle 
+    public function getEtat(): ?EtatArticle 
     {
         return $this->etat;
     }
     
-    public function setEtat(etatArticle $etat): self 
+    public function setEtat(EtatArticle $etat): self 
     {
         $this->etat = $etat;
         return $this;

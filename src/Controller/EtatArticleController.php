@@ -2,7 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\EtatArticle;  
+use App\Entity\EtatArticle;
+use App\Repository\EtatArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,13 +12,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class EtatArticleController extends AbstractController
 {
-    #[Route('/etatArticle', name: 'app_etatArticle')]
-    public function index(EntityManagerInterface $entityManager, Request $request): Response
+    #[Route('/etatArticle', name: 'etatArticle.index')]
+    public function index(EtatArticleRepository $etatArticleRepository): Response
     {
-        $etatArticles = $entityManager->getRepository(EtatArticle::class)->findAll();
+        $etatArticles = $etatArticleRepository->findAll();
         
         return $this->render('etatArticle/index.html.twig', [
-            'etatArticles' => $etatArticles,
+            'datas' => $etatArticles,
         ]);
     }
 }

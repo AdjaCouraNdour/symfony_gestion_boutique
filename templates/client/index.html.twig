@@ -5,34 +5,56 @@
 {% block body %}
     <div class="flex">
         <!-- Liste des clients -->
-        <div class="w-2/3 p-6">
-            <div class="flex justify-between items-center mb-3">
-                <h1 class="text-xl text-black font-bold">Liste des Clients</h1>
+        <div class="w-full p-6">
+            
+            <h1 class="text-xl mb-6 text-black font-bold">Liste des Clients</h1>
+            
+            <div class="flex justify-between mb-2">
+                <form method="GET" action="{{ path('client.searchClientByTelephone') }}" class="mb-4 flex items-center">
+                    <input type="text" name="tel" placeholder="Rechercher par numéro" class="border border-gray-300 p-2 rounded-l-md h-10" required>
+                    <button type="submit" class="bg-burgundy text-white text-sm px-3 rounded-r-md h-10 hover:bg-red-700">Rechercher</button>
+                </form>
+                <form method="GET" action="{{ path('client.searchClientByCompte') }}" class="mb-4 flex items-center">
+                    <select name="hasAccount" class="border border-gray-300 h-10" onchange="this.form.submit()">
+                        <option value="">filtrer par compte</option>
+                        <option value="1">Avec</option>
+                        <option value="0">Sans</option>
+                        <option value="2">Tous</option>
+                    </select>
+                </form>
+
+                <a href="{{ path('client.create') }}" class="bg-burgundy text-white text-sm px-3 rounded-md h-10 flex items-center hover:bg-red-700">+Add client</a>
             </div>
+
 
             <table class="min-w-full bg-white border border-gray-300 rounded-lg">
                 <thead>
                     <tr class="bg-burgundy">
-                        <th class="py-2 px-4 border-b text-white">Nom</th>
-                        <th class="py-2 px-4 border-b text-white">Prénom</th>
-                        <th class="py-2 px-4 border-b text-white">Téléphone</th>
-                        <th class="py-2 px-4 border-b text-white">Adresse</th>
+                        <th class="py-2 px-4 border-b text-white text-left">Surname</th>
+                        <th class="py-2 px-4 border-b text-white text-left">Téléphone</th>
+                        <th class="py-2 px-4 border-b text-white text-left">Adresse</th>
                         <th class="py-2 px-4 border-b text-white">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for client in clients %}
+                    {% for client in datas %}
                         <tr class="bg-nude hover:bg-gray-100">
-                            <td class="py-2 px-4 border-b">{{ client.nom }}</td>
-                            <td class="py-2 px-4 border-b">{{ client.prenom }}</td>
+                            <td class="py-2 px-4 border-b">{{ client.surname }}</td>
                             <td class="py-2 px-4 border-b">{{ client.telephone }}</td>
                             <td class="py-2 px-4 border-b">{{ client.adresse }}</td>
-                            <td class="py-2 px-4 border-b text-center">
-                                <a href="" class="text-grey-500 hover:text-grey-500">
-                                    <i class="fas fa-info-circle" title="Détails"></i>
+                            <td class="py-2 px-4 border-b text-center flex items-center justify-center space-x-2">
+                                <!-- Icône info -->
+                                <a href="" class="text-red-500 hover:text-grey-700" title="Détails">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd"/>
+                                    </svg>
                                 </a>
-                                <a href="" class="text-burgundy hover:text-burgundy ml-2" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce client ?');">
-                                    <i class="fas fa-trash" title="Supprimer"></i>
+
+                                <!-- Icône poubelle -->
+                                <a href="" class="text-grey-500 hover:text-red-600" title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce client ?');">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                                        <path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 0 1 3.878.512.75.75 0 1 1-.256 1.478l-.209-.035-1.005 13.07a3 3 0 0 1-2.991 2.77H8.084a3 3 0 0 1-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 0 1-.256-1.478A48.567 48.567 0 0 1 7.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 0 1 3.369 0c1.603.051 2.815 1.387 2.815 2.951Zm-6.136-1.452a51.196 51.196 0 0 1 3.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 0 0-6 0v-.113c0-.794.609-1.428 1.364-1.452Zm-.355 5.945a.75.75 0 1 0-1.5.058l.347 9a.75.75 0 1 0 1.499-.058l-.346-9Zm5.48.058a.75.75 0 1 0-1.498-.058l-.347 9a.75.75 0 0 0 1.5.058l.345-9Z" clip-rule="evenodd"/>
+                                    </svg>
                                 </a>
                             </td>
                         </tr>
@@ -68,47 +90,5 @@
                 {% endif %}
             </div>      
         </div>
-
-        <!-- ma parti ajouter -->
-        <div class="w-1/3 p-6 bg-gray-100 rounded-lg">
-            <h2 class="text-xl font-bold text-black mb-3">Ajouter un Client</h2>
-
-            <form action="" method="POST">
-                <div class="mb-2">
-                    <label for="nom" class="block text-gray-700">Nom</label>
-                    <input type="text" id="nom" name="nom" class="w-full border border-gray-300 rounded-md" required>
-                </div>
-
-                <div class="mb-2">
-                    <label for="prenom" class="block text-gray-700">Prénom</label>
-                    <input type="text" id="prenom" name="prenom" class="w-full border border-gray-300 rounded-md" required>
-                </div>
-
-                <div class="mb-2">
-                    <label for="telephone" class="block text-gray-700">Téléphone</label>
-                    <input type="text" id="telephone" name="telephone" class="w-full border border-gray-300 rounded-md" required>
-                </div>
-
-                <div class="mb-2">
-                    <label for="adresse" class="block text-gray-700">Adresse</label>
-                    <input type="text" id="adresse" name="adresse" class="w-full border border-gray-300 rounded-md" required>
-                </div>
-                <button type="submit" class="flex items-center bg-burgundy text-white px-4 py-1 rounded-md hover:bg-red-700">
-                    <span class="mr-2">+</span> Add Client 
-                </button>
-            </form>
-        </div>
     </div>
-
-    <style>
-        .bg-burgundy {
-            background-color: #4A0013; /* Couleur rouge bordeaux */
-        }
-        .bg-nude {
-            background-color: rgb(243, 212, 211); /* Couleur rose nude */
-        }
-        .text-grey-500 {
-            color: rgb(48, 48, 48); /* Couleur gris pour l'icône de poubelle */
-        }
-    </style>
 {% endblock %}

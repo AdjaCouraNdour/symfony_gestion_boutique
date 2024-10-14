@@ -2,7 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Dette;  
+use App\Entity\Dette;
+use App\Repository\DetteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,13 +12,13 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DetteController extends AbstractController
 {
-    #[Route('/dette', name: 'app_dette')]
-    public function index(EntityManagerInterface $entityManager, Request $request): Response
+    #[Route('/dette', name: 'dette.index')]
+    public function index(DetteRepository $detteRepository): Response
     {
-        $dettes = $entityManager->getRepository(Dette::class)->findAll();
+        $dettes = $detteRepository->findAll();
         
         return $this->render('dette/index.html.twig', [
-            'dettes' => $dettes,
+            'datas' => $dettes,
         ]);
     }
 }

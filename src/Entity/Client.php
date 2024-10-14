@@ -3,10 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\ClientRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\User;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
-#[ORM\Table(name: "clients")] 
 class Client
 {
     #[ORM\Id]
@@ -15,42 +17,52 @@ class Client
     private ?int $id = null;
 
     #[ORM\Column(type: "string", length: 100)]
-    private ?string $nom = null;
+    private ?string $surname = null;
 
-    #[ORM\Column(type: "string", length: 100)]
-    private ?string $prenom = null;
-
-    #[ORM\Column(type: "string", length: 15)]
+    #[ORM\Column(type: "string", length: 15, unique:true)]
     private ?string $telephone = null;
 
     #[ORM\Column(type: "string", length: 255)]
     private ?string $adresse = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $createAt = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updateAt = null;
+
+    #[ORM\Column]
+    private ?bool $isBlocked = null;
+
+    /**
+     * @var Collection<int, Dette>
+     */
+    #[ORM\OneToMany(targetEntity: Dette::class, mappedBy: 'client', orphanRemoval: true)]
+    private Collection $dettes;
+
+    #[ORM\OneToOne(inversedBy: 'client', cascade: ['persist', 'remove'])]
+    private ?User $userr = null;
+
+ 
+
+    public function __construct()
+    {
+        $this->dettes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function getSurname(): ?string
     {
-        return $this->nom;
+        return $this->surname;
     }
 
-    public function setNom(string $nom): self
+    public function setSurname(string $surname): self
     {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getPrenom(): ?string
-    {
-        return $this->prenom;
-    }
-
-    public function setPrenom(string $prenom): self
-    {
-        $this->prenom = $prenom;
+        $this->surname = $surname;
 
         return $this;
     }
@@ -77,5 +89,88 @@ class Client
         $this->adresse = $adresse;
 
         return $this;
+    } 
+
+    public function getCreateAt(): ?\DateTimeImmutable
+    {
+        return $this->createAt;
     }
+
+    public function setCreateAt(\DateTimeImmutable $createAt): static
+    {
+        $this->createAt = $createAt;
+
+        return $this;
+    }
+
+    public function getUpdateAt(): ?\DateTimeImmutable
+    {
+        return $this->updateAt;
+    }
+
+    public function setUpdateAt(\DateTimeImmutable $updateAt): static
+    {
+        $this->updateAt = $updateAt;
+
+        return $this;
+    }
+
+    public function isBlocked(): ?bool
+    {
+        return $this->isBlocked;
+    }
+
+    public function setBlocked(bool $isBlocked): static
+    {
+        $this->isBlocked = $isBlocked;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dette>
+     */
+    public function getDettes(): Collection
+    {
+        return $this->dettes;
+    }
+
+    public function addDette(Dette $dette): static
+    {
+        if (!$this->dettes->contains($dette)) {
+            $this->dettes->add($dette);
+            $dette->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDette(Dette $dette): static
+    {
+        if ($this->dettes->removeElement($dette)) {
+            // set the owning side to null (unless already changed)
+            if ($dette->getClient() === $this) {
+                $dette->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getUserr(): ?User
+    {
+        return $this->userr;
+    }
+
+    public function setUserr(?User $userr): static
+    {
+        $this->userr = $userr;
+
+        return $this;
+    }
+
+   
+
+   
+
 }

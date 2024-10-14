@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="flex items-center justify-center">
+        <div class="bg-nude rounded-lg shadow-md mt-6 p-6 w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800 text-center">Ajouter un Client</h2>
+
+            {{ form_start(formClient) }}
+            {{ form_row(formClient.surname) }}
+            {{ form_row(formClient.telephone) }}
+            {{ form_row(formClient.adresse) }}
+
+            <div class="flex mt-6">
+                {{ form_widget(formClient.submit, { 'attr': {'class': 'bg-burgundy hover:bg-burgundy-dark text-white font-bold py-2 px-4 rounded'}}) }}
+            </div>
+            
+            {{ form_end(formClient) }}
+        </div>
+    </div>
+{% endblock %}

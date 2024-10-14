@@ -1,9 +1,11 @@
 {
-    "controllers": [
-        {
-            "name": "hello",
-            "module": "./controllers/hello_controller.js" 
+
+    "controllers": {
+            "hello": {
+            "enabled": true,
+            "fetch": "lazy"
         }
-    ],
+    },
+    
     "entrypoints": []
 }

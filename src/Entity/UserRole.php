@@ -2,16 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\EtatArticleRepository;
+use App\Repository\UserRoleRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: EtatArticleRepository::class)]
-class EtatArticle
+#[ORM\Entity(repositoryClass: UserRoleRepository::class)]
+class UserRole
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null; // ID de l'état
+    private ?int $id = null;
 
     #[ORM\Column(type: "string", length: 100)]
     private ?string $libelle = null; 
