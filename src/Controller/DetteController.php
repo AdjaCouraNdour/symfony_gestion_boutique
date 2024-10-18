@@ -17,6 +17,29 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DetteController extends AbstractController
 {
+
+    #[Route('/dette/liste', name: 'dette.listerLesDettes')]
+    public function liste(DetteRepository $detteRepository, Request $request): Response
+    {
+        $page = $request->query->getInt('page', 1); 
+        $limit = 3;
+        $etats = $request->query->get('etat'); 
+        if (empty($etats)) {
+            $dettes = $detteRepository->paginateDettes($page, $limit);
+        } else {
+        }
+      
+          $count = count($dettes);
+        $totalPages = ceil($count / $limit);
+
+        return $this->render('dette/listeDette.html.twig', [
+            'dettes' => $dettes,
+            'etats'=>$etats,
+            'page' => $page,
+            'totalPages' => $totalPages
+        ]);
+    }   
+    
     #[Route('/dette', name: 'dette.index',methods:['GET','POST'])]
     public function index(ArticleRepository $articleRepository,Request $request): Response
     {     
@@ -68,24 +91,5 @@ class DetteController extends AbstractController
         ]);
     }
 
-    #[Route('/dette/liste', name: 'dette.listerLesDettes')]
-    public function liste(DetteRepository $detteRepository, Request $request): Response
-    {
-        $page = $request->query->getInt('page', 1); 
-        $limit = 3;
-        $etats = $request->query->get('etat'); 
-        if (empty($etats)) {
-            $dettes = $detteRepository->paginateDettes($page, $limit);
-        } else {
-        }
-        $count = count($dettes);
-        $totalPages = ceil($count / $limit);
-
-        return $this->render('dette/listeDette.html.twig', [
-            'dettes' => $dettes,
-            'etats'=>$etats,
-            'page' => $page,
-            'totalPages' => $totalPages
-        ]);
-    }   
+    
 }
