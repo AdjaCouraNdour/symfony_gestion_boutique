@@ -6,10 +6,11 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Client;
 use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\UnusedTagsPass;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-class User
+class User implements PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -23,9 +24,9 @@ class User
     }
     
 
-    #[ORM\ManyToOne(targetEntity: UserRole::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\Column(type: "string", enumType: UserRole::class)]
     private ?UserRole $role = null;
+
 
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
@@ -35,7 +36,7 @@ class User
 
     #[ORM\Column(length: 255,unique:true)]
     private ?string $login = null;
-
+ 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
@@ -51,12 +52,19 @@ class User
     #[ORM\OneToOne(mappedBy: 'userr', cascade: ['persist', 'remove'])]
     private ?Client $client = null;
 
-    public function getRole(): ?UserRole 
+    public function __construct() {
+        $this->createAt = new \DateTimeImmutable();
+        $this->updateAt = new \DateTimeImmutable();
+        $this->isBlocked = false;
+
+    }
+
+    public function getRole(): ?UserRole
     {
         return $this->role;
     }
-    
-    public function setRole(?UserRole $role): self 
+
+    public function setRole(UserRole $role): self
     {
         $this->role = $role;
         return $this;

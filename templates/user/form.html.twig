@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="flex items-center justify-center">
+        <div class="bg-nude rounded-lg shadow-md mt-6 p-6 w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800 text-center">Ajouter un User</h2>
+
+            <form id="userForm" method="post">
+                {{ form_row(formUser.prenom, {'attr': {'id': 'prenom'}}) }}
+                <div id="prenomError" class="text-red-600"></div>
+
+                {{ form_row(formUser.nom, {'attr': {'id': 'nom'}}) }}
+                <div id="nomError" class="text-red-600"></div>
+
+                {{ form_row(formUser.login, {'attr': {'id': 'login'}}) }}
+                <div id="loginError" class="text-red-600"></div>
+
+                {{ form_row(formUser.password, {'attr': {'id': 'mdp'}}) }}
+                <div id="passwordError" class="text-red-600"></div>
+
+                {{ form_row(formUser.prenom, {'attr': {'id': 'telephone'}}) }}
+                <div id="telephoneError" class="text-red-600"></div>
+
+                {{ form_row(formUser.adresse) }}
+
+                <div class="mt-4">
+                    <label for="addUser" class="inline-flex items-center">
+                        <input type="checkbox" id="addUser" class="form-checkbox h-5 w-5 text-burgundy">
+                        <span class="ml-2 text-gray-700">Ajouter un utilisateur</span>
+                    </label>
+                </div>
+
+                <div class="flex mt-6">
+                    {{ form_widget(formUser.submit, { 'attr': {'class': 'bg-burgundy hover:bg-burgundy-dark text-white font-bold py-2 px-4 rounded'}}) }}
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+

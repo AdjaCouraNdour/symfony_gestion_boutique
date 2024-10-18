@@ -24,6 +24,7 @@ class Details
     #[ORM\JoinColumn(nullable: false)]
     private ?Dette $dette = null;
 
+    
     public function getId(): ?int
     {
         return $this->id;

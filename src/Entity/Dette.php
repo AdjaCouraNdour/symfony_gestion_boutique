@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\DetteRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: DetteRepository::class)]
 class Dette
@@ -25,16 +27,19 @@ class Dette
     private ?float $montantVerse = null;
 
     #[ORM\Column(type: "float", precision: 10, scale: 2 , nullable: true)]
-    private ?float $montantRestant = null;
+    private ?float $montantRestant = null;  
 
+    #[ORM\Column(type: "string", enumType: TypeDette::class)]
+    private ?TypeDette $type = null;
 
-    #[ORM\ManyToOne(targetEntity: TypeDette::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?TypeDette $type = null;  
-
-    #[ORM\ManyToOne(targetEntity: EtatDette::class)]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\Column(type: "string", enumType: EtatDette::class)]
     private ?EtatDette $etat = null;
+
+      /**
+     * @var Collection<int, Details>
+     */
+    #[ORM\OneToMany(targetEntity: Details::class, mappedBy: 'dette', orphanRemoval: true,cascade:['persist'])]
+    private Collection $details;
 
     #[ORM\ManyToOne(inversedBy: 'dettes')]
     #[ORM\JoinColumn(nullable: false)]
@@ -46,6 +51,11 @@ class Dette
     #[ORM\Column]
     private ?\DateTimeImmutable $updateAt = null;
 
+    public function __construct()
+    {
+        $this->createAt = new \DateTimeImmutable(); 
+        $this->updateAt = new \DateTimeImmutable(); 
+    }
     public function getMontant(): ?float
     {
         return $this->montant;
@@ -75,7 +85,9 @@ class Dette
     
     public function setMontantRestant(float $montantRestant): self
     {
-        $this->montantRestant = $montantRestant;
+        // $this->montantRestant = $montantRestant;
+        $this->montantRestant = $this->getMontant() - $this->getMontantVerse() ;
+
         return $this;
     }
 
@@ -132,6 +144,25 @@ class Dette
     public function setUpdateAt(\DateTimeImmutable $updateAt): static
     {
         $this->updateAt = $updateAt;
+
+        return $this;
+    }
+
+    
+    /**
+     * @return Collection<int, detail>
+     */
+    public function getDetails(): Collection
+    {
+        return $this->details;
+    }
+
+    public function adddetail(Details $detail): static
+    {
+        if (!$this->details->contains($detail)) {
+            $this->details->add($detail);
+            $detail->setDette($this);
+        }
 
         return $this;
     }

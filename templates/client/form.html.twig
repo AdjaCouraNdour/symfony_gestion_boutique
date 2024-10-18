@@ -1,20 +1,57 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="flex items-center justify-center">
-        <div class="bg-nude rounded-lg shadow-md mt-6 p-6 w-full max-w-md">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800 text-center">Ajouter un Client</h2>
+    <div class="flex justify-center mt-6">
+        <!-- Formulaire du client à gauche -->
+        <div class="bg-nude rounded-lg shadow-md p-4 w-full max-w-sm">
+            <h2 class="text-xl font-bold mb-4 text-gray-800 text-center">Ajouter un Client</h2>
 
-            {{ form_start(formClient) }}
-            {{ form_row(formClient.surname) }}
-            {{ form_row(formClient.telephone) }}
-            {{ form_row(formClient.adresse) }}
+            <form id="clientForm" method="post">
+                {{ form_row(formClient.surname, {'attr': {'id': 'surname', 'class': 'text-sm p-2 border rounded w-full'}}) }}
+                <div id="surnameError" class="text-red-600 text-sm"></div>
 
-            <div class="flex mt-6">
-                {{ form_widget(formClient.submit, { 'attr': {'class': 'bg-burgundy hover:bg-burgundy-dark text-white font-bold py-2 px-4 rounded'}}) }}
-            </div>
-            
-            {{ form_end(formClient) }}
+                {{ form_row(formClient.telephone, {'attr': {'id': 'telephone', 'class': 'text-sm p-2 border rounded w-full'}}) }}
+                <div id="telephoneError" class="text-red-600 text-sm"></div>
+
+                {{ form_row(formClient.adresse, {'attr': {'class': 'text-sm p-2 border rounded w-full'}}) }}
+
+                <div class="flex items-center justify-center mt-4">
+                    <label for="addUser" class="inline-flex items-center">
+                        <input type="checkbox" id="addUser" class="form-checkbox h-4 w-4 text-burgundy">
+                        <span class="ml-2 text-gray-700 text-sm">Ajouter un utilisateur</span>
+                    </label>
+                </div>
+            </form>
+        </div>
+
+        <!-- Formulaire de l'utilisateur à droite, masqué par défaut -->
+        <div id="userFields" class="bg-nude rounded-lg shadow-md p-4 w-full max-w-sm ml-6" style="display: none;">
+            <h2 class="text-xl font-bold mb-2 text-gray-800 text-center">Ajout avec User</h2>
+
+            <form id="userForm">
+                {{ form_row(formUser.prenom, {'attr': {'id': 'prenom', 'class': 'text-sm p-2 border rounded w-full'}}) }}
+                <div id="prenomError" class="text-red-600 text-sm"></div>
+
+                {{ form_row(formUser.nom, {'attr': {'id': 'nom', 'class': 'text-sm p-2 border rounded w-full'}}) }}
+                <div id="nomError" class="text-red-600 text-sm"></div>
+
+                {{ form_row(formUser.login, {'attr': {'id': 'login', 'class': 'text-sm p-2 border rounded w-full'}}) }}
+                <div id="loginError" class="text-red-600 text-sm"></div>
+
+                {{ form_row(formUser.password, {'attr': {'id': 'mdp', 'class': 'text-sm p-2 border rounded w-full'}}) }}
+                <div id="passwordError" class="text-red-600 text-sm"></div>
+            </form>
         </div>
     </div>
+
+    <div class="flex justify-center mt-6">
+        <!-- Bouton de soumission à l'intérieur du formulaire -->
+        {# <button type="submit" form="clientForm" class="bg-burgundy hover:bg-burgundy-dark text-white font-bold py-1 px-3 rounded text-sm">
+            Ajouter
+        </button> #}
+         <div class="flex mt-6">
+                {{ form_widget(formClient.submit, { 'attr': {'class': 'bg-burgundy hover:bg-burgundy-dark text-white font-bold py-2 px-4 rounded'}}) }}
+        </div>
+    </div>
+
 {% endblock %}

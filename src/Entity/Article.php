@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
+#[UniqueEntity('libelle', message:'le libelle doit etre unique')]
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 class Article
@@ -24,10 +27,21 @@ class Article
     
     #[ORM\Column(type: "float", precision: 10, scale: 2)]
     private ?float $prix = null; 
-    
-    #[ORM\ManyToOne(targetEntity: EtatArticle::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?EtatArticle $etat = null; 
+
+    #[ORM\Column(type: "string", enumType: EtatArticle::class)]
+    private ?EtatArticle $etat = null;
+
+    #[ORM\Column(type: "datetime_immutable")]
+    private ?\DateTimeImmutable $createAt = null;
+
+    #[ORM\Column(type: "datetime_immutable")]
+    private ?\DateTimeImmutable $updateAt = null;
+
+    public function __construct()
+    {
+        $this->createAt = new \DateTimeImmutable(); 
+        $this->updateAt = new \DateTimeImmutable(); 
+    } 
 
     public function getId(): ?int
     {
@@ -86,6 +100,29 @@ class Article
     public function setEtat(EtatArticle $etat): self 
     {
         $this->etat = $etat;
+        return $this;
+    }
+
+    public function setCreateAt(\DateTimeImmutable $createAt): static
+    {
+        $this->createAt = $createAt;
+
+        return $this;
+    }
+
+    public function getCreateAt(): ?\DateTimeImmutable
+    {
+        return $this->createAt;
+    }
+
+    public function getUpdateAt(): ?\DateTimeImmutable
+    {
+        return $this->updateAt;
+    }
+
+    public function setUpdateAt(\DateTimeImmutable $updateAt): self
+    {
+        $this->updateAt = $updateAt;
         return $this;
     }
 }

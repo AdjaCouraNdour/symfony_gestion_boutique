@@ -1,11 +1,4 @@
 {
-
-    "controllers": {
-            "hello": {
-            "enabled": true,
-            "fetch": "lazy"
-        }
-    },
-    
+    "controllers": [],
     "entrypoints": []
 }

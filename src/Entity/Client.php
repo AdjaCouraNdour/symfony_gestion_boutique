@@ -7,6 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\User;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+// lorsque que le formulaire est mappé directement a la l'entite
+
+#[UniqueEntity('telephone', message:'le telephone doit etre unique')]
+#[UniqueEntity('surname', message:'le surname doit etre unique')]
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client
@@ -16,7 +22,10 @@ class Client
     #[ORM\Column(type: "integer")]
     private ?int $id = null;
 
-    #[ORM\Column(type: "string", length: 100)]
+    #[ORM\Column(type: "string", length: 100 ,unique:true)]
+    // #[Assert\NotBlank(
+    //     message:'veillez entrer un surname valide',
+    // )]
     private ?string $surname = null;
 
     #[ORM\Column(type: "string", length: 15, unique:true)]
@@ -37,17 +46,18 @@ class Client
     /**
      * @var Collection<int, Dette>
      */
-    #[ORM\OneToMany(targetEntity: Dette::class, mappedBy: 'client', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Dette::class, mappedBy: 'client', orphanRemoval: true,cascade:['persist'])]
     private Collection $dettes;
 
     #[ORM\OneToOne(inversedBy: 'client', cascade: ['persist', 'remove'])]
     private ?User $userr = null;
 
- 
-
-    public function __construct()
-    {
+    public function __construct() {
+        $this->createAt = new \DateTimeImmutable();
+        $this->updateAt = new \DateTimeImmutable();
+        $this->isBlocked = false;
         $this->dettes = new ArrayCollection();
+
     }
 
     public function getId(): ?int

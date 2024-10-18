@@ -2,23 +2,26 @@
 
 namespace App\Controller;
 
-use App\Entity\Details;  
-use App\Form\DetailsType;
-use App\Repository\DetailsRepository;
+use App\Entity\Dette;
+use App\Repository\DetteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DetailsController extends AbstractController
 {
-    // #[Route('/details', name: 'details.index')]
-    // public function index(DetailsRepository $detailsRepository): Response
-    // {
-    //     $details = $detailsRepository->findAll();
-        
-    //     return $this->render('details/index.html.twig', [
-    //         'datas' => $details,
-    //     ]);
-    // }
+    #[Route('/dette/details/{id}', name: 'dette.showDetails', methods: ['GET'])]
+    public function showDetails(DetteRepository $detteRepository, int $id): Response
+    {
+        // Récupérer la dette avec les articles liés via les détails
+        $dette = $detteRepository->findDetteWithArticles($id); // Cette méthode doit exister dans ton repository    
+        if (!$dette) {
+            throw $this->createNotFoundException('Aucune dette trouvée pour cet ID.');
+        }
+        // Rendre la vue avec les informations de la dette et les articles
+        return $this->render('dette/details.html.twig', [
+            'dette' => $dette
+        ]);
+    }
+    
 }

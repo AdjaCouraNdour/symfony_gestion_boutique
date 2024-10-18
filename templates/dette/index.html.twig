@@ -1,20 +1,94 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DetteController!{% endblock %}
+{% block title %}Gestion des Articles et Dettes{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="flex space-x-6 p-6">
+        <!-- Côté gauche: Formulaire de recherche et liste des articles -->
+        <div class="w-1/2">
+            <h1 class="text-xl mb-6 text-black font-bold">Liste des Articles</h1>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+            <!-- Formulaire de recherche -->
+            {{ form_start(formSearch) }}
+            <div class="mb-2">
+                {{ form_errors(formSearch.libelle) }}
+            </div>
+            <div class="flex mb-4">
+                {{ form_widget(formSearch.libelle, {'attr': {
+                    'class':'border border-gray-300 p-2 rounded-l-md h-10 w-full'
+                }}) }}
+                {{ form_widget(formSearch.rechercher, {'attr': {
+                    'class':'bg-burgundy text-white h-10 px-4 rounded-r-md hover:bg-red-700'
+                }}) }}
+            </div>
+            {{ form_end(formSearch) }}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/home/adja/ISML3/symfony_project/gestion_boutique/src/Controller/DetteController.php</code></li>
-        <li>Your template at <code>/home/adja/ISML3/symfony_project/gestion_boutique/templates/dette/index.html.twig</code></li>
-    </ul>
-</div>
+            <!-- Table des articles -->
+            <table class="min-w-full bg-white border border-gray-300 rounded-lg">
+                <thead>
+                    <tr class="bg-burgundy text-white">
+                        <th class="py-2 px-4">Sélection</th>
+                        <th class="py-2 px-4">Libelle</th>
+                        <th class="py-2 px-4">Stock</th>
+                        <th class="py-2 px-4">Prix</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for article in datas %}
+                        <tr class="hover:bg-gray-100">
+                            <td class="py-2 px-4">
+                                <input type="checkbox" onclick="addToSelection('{{ article.libelle }}', {{ article.prix }}, {{ article.id }})" />
+                            </td>
+                            <td class="py-2 px-4">{{ article.libelle }}</td>
+                            <td class="py-2 px-4">{{ article.qteStock }}</td>
+                            <td class="py-2 px-4">{{ article.prix }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="mt-4">
+                {% if totalPages > 1 %}
+                    <nav class="flex justify-center">
+                        <a href="{{ path('dette.index', { page: page - 1 }) }}" class="px-3 py-1 bg-burgundy text-white rounded hover:bg-gray-300">&laquo;</a>
+                        {% for i in 1..totalPages %}
+                            <a href="{{ path('dette.index', { page: i }) }}" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 {% if i == page %} bg-gray-400 {% endif %}">
+                                {{ i }}
+                            </a>
+                        {% endfor %}
+                        <a href="{{ path('dette.index', { page: page + 1 }) }}" class="px-3 py-1 bg-burgundy text-white rounded hover:bg-gray-300">&raquo;</a>
+                    </nav>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Côté droit: Liste des articles sélectionnés -->
+        <div class="w-1/2">
+            <h2 class="text-xl mb-6 text-black font-bold">Articles Sélectionnés</h2>
+            
+            <!-- Tableau pour afficher les articles sélectionnés -->
+            <table id="selectedArticlesTable" class="min-w-full bg-white border border-gray-300 rounded-lg">
+                <thead>
+                    <tr class="bg-burgundy text-white">
+                        <th class="py-2 px-4">Libelle</th>
+                        <th class="py-2 px-4">Quantité</th>
+                        <th class="py-2 px-4">Prix</th>
+                        <th class="py-2 px-4">Total</th>
+                        <th class="py-2 px-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Les articles sélectionnés seront ajoutés ici via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bouton Save -->
+    <div class="flex justify-end p-6">
+        <button class="bg-burgundy text-white text-lg px-6 py-2 rounded hover:bg-red-700" onclick="saveSelection(); this.form.submit();">Save</button>
+    </div>
+
+    
 {% endblock %}

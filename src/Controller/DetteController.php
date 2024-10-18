@@ -3,6 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Dette;
+use App\Entity\TypeDette;
+use App\Form\SearchArticleType;
+use App\Form\TypeDetteType;
+use App\Repository\ArticleRepository;
 use App\Repository\DetteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,13 +16,58 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DetteController extends AbstractController
 {
-    #[Route('/dette', name: 'dette.index')]
-    public function index(DetteRepository $detteRepository): Response
+    #[Route('/dette', name: 'dette.index',methods:['GET','POST'])]
+    public function index(ArticleRepository $articleRepository,Request $request): Response
     {
-        $dettes = $detteRepository->findAll();
         
+        $formSearch = $this->createForm(SearchArticleType::class);
+        $formSearch->handleRequest($request);
+        $page=$request->query->getInt('page',1);
+        $count=0;
+        $totalPages=0;
+        $limit=3;
+      
+        if ($formSearch->isSubmitted($request) && $formSearch->isValid()){
+            $articles = $articleRepository->findBy(['libelle' => $formSearch->get('libelle')->getData()]);
+        }else{
+           $articles= $articleRepository->paginateArticle($page,$limit);
+            $count=$articles->count();
+            $totalPages=ceil($count / $limit);
+        }
+
         return $this->render('dette/index.html.twig', [
-            'datas' => $dettes,
+            'datas' => $articles,
+            'formSearch'=>$formSearch->createView(),
+            'page'=>$page,
+            'totalPages'=>$totalPages, 
         ]);
     }
+
+
+    #[Route('/dette/store', name: 'dette.store')]
+    public function store(EntityManagerInterface $entityManager, Request $request): Response
+    {
+        $dette = new Dette();
+        $form = $this->createForm(TypeDetteType::class, $dette);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            if ($dette->getMontantVerse() >= $dette->getMontant()) {
+                $dette->setType(TypeDette::solde); 
+            } else {
+                $dette->setType(TypeDette::nonSolde);
+            }
+            $dette->getClient();
+            $dette->getDetails();
+            $entityManager->persist($dette);
+            $entityManager->flush();
+            return $this->redirectToRoute('dette_index');
+        }
+        return $this->render('dette/creer.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+
+    
 }
