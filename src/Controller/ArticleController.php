@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\EtatArticle;
 use App\Form\ArticleType;
 use App\Form\SearchArticleType;
 use App\Repository\ArticleRepository;
@@ -53,13 +54,9 @@ class ArticleController extends AbstractController
         $form=$this->createForm(ArticleType::class,$article);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $article->getReference();
-            $article->getLibelle();
-            $article->getQteStock();
-            $article->getPrix();
+            $article->setEtat(EtatArticle::disponible);
             $article->getCreateAt(new \DateTimeImmutable());
             $article->getUpdateAt(new \DateTimeImmutable());
-
             $entityManager->persist($article);
             $entityManager->flush();
         }

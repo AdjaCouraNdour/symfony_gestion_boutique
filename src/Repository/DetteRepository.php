@@ -17,7 +17,7 @@ class DetteRepository extends ServiceEntityRepository
         parent::__construct($registry, Dette::class);
     }
 
-    public function paginateDette(int $page ,int $limit): Paginator
+    public function paginateDettes(int $page ,int $limit ): Paginator
     {
         $query = $this->createQueryBuilder('c')
             ->setFirstResult(( $page - 1 ) * $limit)

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Dette;
 use App\Entity\TypeDette;
+use App\Form\DetteType;
 use App\Form\SearchArticleType;
 use App\Form\TypeDetteType;
 use App\Repository\ArticleRepository;
@@ -18,8 +19,7 @@ class DetteController extends AbstractController
 {
     #[Route('/dette', name: 'dette.index',methods:['GET','POST'])]
     public function index(ArticleRepository $articleRepository,Request $request): Response
-    {
-        
+    {     
         $formSearch = $this->createForm(SearchArticleType::class);
         $formSearch->handleRequest($request);
         $page=$request->query->getInt('page',1);
@@ -48,7 +48,7 @@ class DetteController extends AbstractController
     public function store(EntityManagerInterface $entityManager, Request $request): Response
     {
         $dette = new Dette();
-        $form = $this->createForm(TypeDetteType::class, $dette);
+        $form = $this->createForm(DetteType::class, $dette);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
 
@@ -68,6 +68,24 @@ class DetteController extends AbstractController
         ]);
     }
 
+    #[Route('/dette/liste', name: 'dette.listerLesDettes')]
+    public function liste(DetteRepository $detteRepository, Request $request): Response
+    {
+        $page = $request->query->getInt('page', 1); 
+        $limit = 3;
+        $etats = $request->query->get('etat'); 
+        if (empty($etats)) {
+            $dettes = $detteRepository->paginateDettes($page, $limit);
+        } else {
+        }
+        $count = count($dettes);
+        $totalPages = ceil($count / $limit);
 
-    
+        return $this->render('dette/listeDette.html.twig', [
+            'dettes' => $dettes,
+            'etats'=>$etats,
+            'page' => $page,
+            'totalPages' => $totalPages
+        ]);
+    }   
 }
