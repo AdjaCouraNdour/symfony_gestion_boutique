@@ -33,21 +33,17 @@ class DetteController extends AbstractController
         if ($formClientDette->isSubmitted() && $formClientDette->isValid()) {
             $data = $formClientDette->getData();
     
-            // Recherche du client par prénom et téléphone
             $client = $clientRepository->findOneBy([
                 'surname' => $data['surname'],
                 'telephone' => $data['telephone'],
             ]);
     
-            // Si le client est trouvé, on redirige vers la page form.html.twig avec l'ID du client
             if ($client) {
                 return $this->redirectToRoute('dette.form', ['clientId' => $client->getId()]);
             } else {
-                // Si le client n'existe pas, on affiche un message d'erreur
                 $this->addFlash('error', 'Client non trouvé.');
             }
         }
-        // Rendu du formulaire de validation
         return $this->render('dette/index.html.twig', [
             'formClientDette' => $formClientDette->createView(),
         ]);
@@ -57,16 +53,13 @@ class DetteController extends AbstractController
 #[Route('/dette/form/{clientId}', name: 'dette.form')]
 public function form($clientId, ClientRepository $clientRepository, ArticleRepository $articleRepository): Response
 {
-    // Récupérer le client à partir de l'ID
     $client = $clientRepository->find($clientId);
     if (!$client) {
         throw $this->createNotFoundException('Client non trouvé');
     }
 
-    // Récupérer la liste des articles
     $articles = $articleRepository->findAll();
 
-    // Afficher le formulaire
     return $this->render('dette/form.html.twig', [
         'client' => $client,
         'articles' => $articles,
@@ -76,13 +69,11 @@ public function form($clientId, ClientRepository $clientRepository, ArticleRepos
 #[Route('/dette/save/{clientId}', name: 'dette.save', methods: ['POST'])]
 public function save($clientId, Request $request, ClientRepository $clientRepository, ArticleRepository $articleRepository, EntityManagerInterface $entityManager): Response
 {
-    // Récupérer le client à partir de l'ID
     $client = $clientRepository->find($clientId);
     if (!$client) {
         throw $this->createNotFoundException('Client non trouvé');
     }
 
-    // Créer une nouvelle dette
     $dette = new Dette();
     $dette->setClient($client);
     $dette->setMontantVerse(0);
@@ -92,30 +83,26 @@ public function save($clientId, Request $request, ClientRepository $clientReposi
     $dette->setCreateAt(new \DateTimeImmutable());
     $dette->setUpdateAt(new \DateTimeImmutable());
 
-    // Récupérer les articles cochés depuis le formulaire
     $selectedArticlesJson = $request->request->get('selectedArticles');
     $selectedArticles = json_decode($selectedArticlesJson, true);
 
-    // Pour chaque article sélectionné, créer un objet Details
     foreach ($selectedArticles as $articleData) {
-        $article = $articleRepository->find($articleData['id']); // trouve l'article par ID
+        $article = $articleRepository->find($articleData['id']); 
         if ($article) {
-            $details = new Details(); // Créer un nouveau détail
-            $details->setArticle($article); // Associer l'article
-            $details->setDette($dette); // Associer la dette
-            $details->setQteDette($articleData['quantite']); // Associer la quantité
-            $entityManager->persist($details); // Persister le détail dans la base
+            $details = new Details(); 
+            $details->setArticle($article);
+            $details->setDette($dette); 
+            $details->setQteDette($articleData['quantite']); 
+            $entityManager->persist($details); 
         }
     }
 
     $montantTotal=0;
     foreach ($selectedArticles as $articleData) {
-        $montantTotal += $articleData['prix'] * $articleData['quantite']; // Ajouter au montant total
+        $montantTotal += $articleData['prix'] * $articleData['quantite']; 
     }
 
     $dette->setMontant($montantTotal); 
-
-    // Enregistrer la Dette
 
     $entityManager->persist($dette);
     $entityManager->flush();

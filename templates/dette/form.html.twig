@@ -6,15 +6,12 @@
     <div class="container mx-auto mt-10">
         <h1 class="text-2xl font-bold mb-1">Créer une Dette</h1>
 
-        <!-- Informations du client -->
         <div class="mb-4 p-4 bg-gray-100 rounded shadow">
             <p><strong>Surname :</strong> {{ client.surname }}</p>
             <p><strong>Téléphone :</strong> {{ client.telephone }}</p>
         </div>
 
-        <!-- Section principale : Liste des articles et articles sélectionnés -->
         <div class="flex space-x-6">
-            <!-- Tableau des articles à gauche -->
             <div class="w-1/2">
                 <h2 class="text-xl font-bold mb-4">Liste des Articles</h2>
                 <table class="min-w-full bg-white border border-gray-300 rounded-lg">
@@ -41,7 +38,6 @@
                 </table>
             </div>
 
-            <!-- Tableau des articles sélectionnés à droite -->
             <div class="w-1/2">
                 <h2 class="text-xl font-bold mb-4">Articles Sélectionnés</h2>
                 <table id="selectedArticlesTable" class="min-w-full bg-white border border-gray-300 rounded-lg">
@@ -60,7 +56,6 @@
             </div>
         </div>
 
-        <!-- Bouton Save -->
         <form action="{{ path('dette.save', { clientId: client.id }) }}" method="POST" onsubmit="saveSelection()">
             <input type="hidden" id="selectedArticlesInput" name="selectedArticles">
             <button type="submit" class="bg-burgundy text-white px-4 py-2 rounded hover:bg-red-700 transition duration-200">
@@ -75,49 +70,38 @@
     function addToSelection(libelle, prix, id) {
         const tableBody = document.getElementById('selectedArticlesTable').getElementsByTagName('tbody')[0];
 
-        // Vérifier si l'article est déjà sélectionné
         const existingArticleIndex = selectedArticles.findIndex(article => article.id === id);
         if (existingArticleIndex >= 0) {
-            // Si l'article est déjà sélectionné et qu'il est décoché, le retirer
             selectedArticles.splice(existingArticleIndex, 1);
-            // Retirer la ligne du tableau
             tableBody.deleteRow(existingArticleIndex);
             return;
         }
 
         const newRow = tableBody.insertRow();
 
-        // Ajouter l'article à la sélection et afficher dans le tableau des articles sélectionnés
-        newRow.insertCell(0).textContent = libelle; // Libellé
+        newRow.insertCell(0).textContent = libelle; 
 
         const quantityCell = newRow.insertCell(1);
         
-        // Créer une div contenant les boutons "moins", "quantité", et "plus"
         const quantityWrapper = document.createElement('div');
-        quantityWrapper.classList.add('flex', 'items-center', 'space-x-2'); // Ajouter un espacement
+        quantityWrapper.classList.add('flex', 'items-center', 'space-x-2');
 
-        // Champ de quantité
         const quantityInput = document.createElement('input');
         quantityInput.type = 'number';
         quantityInput.min = 1;
-        quantityInput.value = 1; // Valeur par défaut
-        quantityInput.classList.add('border', 'px-2', 'py-1', 'w-12', 'text-center'); // Rendre le champ moins large
+        quantityInput.value = 1; 
+        quantityInput.classList.add('border', 'px-2', 'py-1', 'w-12', 'text-center'); 
 
         quantityWrapper.appendChild(quantityInput);
-        // quantityWrapper.appendChild(plusButton);
         quantityCell.appendChild(quantityWrapper);
 
-        // Prix unitaire
         newRow.insertCell(2).textContent = prix.toFixed(2) + ' CFA';
 
-        // Prix total (prix unitaire * quantité)
         const totalCell = newRow.insertCell(3);
-        totalCell.textContent = (prix * 1).toFixed(2) + ' CFA'; // Par défaut, quantité = 1
+        totalCell.textContent = (prix * 1).toFixed(2) + ' CFA';
 
-        // Ajouter l'article sélectionné à la liste avec la quantité
         selectedArticles.push({ libelle, prix, id, quantite: 1 });
 
-        // Mettre à jour le prix total quand la quantité change
         quantityInput.addEventListener('input', function () {
             const quantity = parseInt(quantityInput.value);
             totalCell.textContent = (prix * quantity).toFixed(2) + ' CFA';
@@ -134,9 +118,8 @@
 
             if (newQuantity > 0) {
                 article.quantite = newQuantity;
-                quantityInput.value = newQuantity; // Mettre à jour l'input de quantité
+                quantityInput.value = newQuantity; 
             } else {
-                // Si la quantité devient 0, retirer l'article
                 selectedArticles.splice(index, 1);
                 document.getElementById('selectedArticlesTable').deleteRow(index + 1);
             }

@@ -65,52 +65,41 @@ public function store(Request $request, EntityManagerInterface $entityManager): 
 {
     $client = new Client();
     $user = new User(); 
-    // Création des formulaires
     $formClient = $this->createForm(ClientType::class, $client);
     $formUser = $this->createForm(UserType::class, $user);
 
-    // Gestion de la requête
     $formClient->handleRequest($request);
     $formUser->handleRequest($request);
 
-    // Si le formulaire client est soumis et valide
     if ($formClient->isSubmitted() && $formClient->isValid()) {
         $client->setBlocked(false);
         $client->setCreateAt(new \DateTimeImmutable());
         $client->setUpdateAt(new \DateTimeImmutable());
 
-        // Récupérer la valeur du champ addUser
         $addUser = $formClient->get('addUser')->getData();
 
-        // Si l'utilisateur est à ajouter et que le formulaire utilisateur est soumis et valide
         if ($addUser) {
             if ($formUser->isSubmitted() && $formUser->isValid()) {
                 $user->setBlocked(false);
                 $user->setCreateAt(new \DateTimeImmutable());
                 $user->setUpdateAt(new \DateTimeImmutable());
 
-                // Associer l'utilisateur au client
                 $user->setClient($client);
                 $client->setUserr($user);
 
-                // Sauvegarder l'utilisateur dans la base de données
                 $entityManager->persist($user);
 
             } else {
-                // Si le formulaire utilisateur n'est pas valide, vous pouvez gérer cela comme vous le souhaitez
-                // Par exemple, vous pouvez afficher un message d'erreur ou simplement enregistrer le client sans l'utilisateur
+               
             }
         }
 
-        // Sauvegarder le client dans la base de données
         $entityManager->persist($client);
         $entityManager->flush();
 
-        // Rediriger vers la liste des clients
         return $this->redirectToRoute('client.index');
     }
 
-    // Si les formulaires ne sont pas valides ou non soumis, retourner la vue
     return $this->render('client/form.html.twig', [
         'formClient' => $formClient->createView(),
         'formUser' => $formUser->createView(),

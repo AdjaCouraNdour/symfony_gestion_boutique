@@ -31,12 +31,10 @@ class ArticleController extends AbstractController
         if ($formSearch->isSubmitted($request) && $formSearch->isValid()){
             $libelle = $formSearch->get('libelle')->getData();
         }
-            // $articles = $articleRepository->findBy(['libelle' => $formSearch->get('libelle')->getData()]);
-        // }else{
+       
             $articles = $articleRepository->paginateArticle($page, $limit, $libelle);
             $count=$articles->count();
             $totalPages=ceil($count / $limit);
-        // }
 
         return $this->render('article/index.html.twig', [
             'datas' => $articles,
@@ -55,10 +53,9 @@ class ArticleController extends AbstractController
         $form=$this->createForm(ArticleType::class,$article);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            // $article->getReference();
             if ($article->getId()) {
-                $reference = '0000' . $article->getId(); // Génère "0000" + id
-                $article->setReference($reference); // Utilisez setReference pour définir la valeur
+                $reference = '0000' . $article->getId(); 
+                $article->setReference($reference);
             } else {
                 $article->setReference('Libellé par défaut');
             }
