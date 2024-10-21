@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Entity\EtatArticle;
+use App\Enums\EtatArticle as EnumsEtatArticle;
 use App\Form\ArticleType;
 use App\Form\SearchArticleType;
 use App\Repository\ArticleRepository;
@@ -54,12 +55,23 @@ class ArticleController extends AbstractController
         $form=$this->createForm(ArticleType::class,$article);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $article->setEtat(EtatArticle::disponible);
+            // $article->getReference();
+            if ($article->getId()) {
+                $reference = '0000' . $article->getId(); // Génère "0000" + id
+                $article->setReference($reference); // Utilisez setReference pour définir la valeur
+            } else {
+                $article->setReference('Libellé par défaut');
+            }
+            $article->getEtat(EnumsEtatArticle::disponible);
+
             $article->getCreateAt(new \DateTimeImmutable());
             $article->getUpdateAt(new \DateTimeImmutable());
             $entityManager->persist($article);
             $entityManager->flush();
+            return $this->redirectToRoute('article.index');
+
         }
+
         return $this->render('article/form.html.twig', [ 
             'formArticle'=>$form->createView(),   
         ]);

@@ -168,6 +168,6 @@ function addToSelection(libelle, prix, id) {
         actionCell.appendChild(removeButton);
         }
 
-        // function saveSelection() {
-        //     document.getElementById('selectedArticlesInput').value = JSON.stringify(selectedArticles);
-        // }
+        function saveSelection() {
+            document.getElementById('selectedArticlesInput').value = JSON.stringify(selectedArticles);
+        }

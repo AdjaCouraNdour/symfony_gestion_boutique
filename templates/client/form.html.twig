@@ -1,57 +1,163 @@
-{% extends 'base.html.twig' %}
+{# {% extends 'base.html.twig' %}
 
 {% block body %}
     <div class="flex justify-center mt-6">
-        <!-- Formulaire du client à gauche -->
         <div class="bg-nude rounded-lg shadow-md p-4 w-full max-w-sm">
             <h2 class="text-xl font-bold mb-4 text-gray-800 text-center">Ajouter un Client</h2>
 
             <form id="clientForm" method="post">
-                {{ form_row(formClient.surname, {'attr': {'id': 'surname', 'class': 'text-sm p-2 border rounded w-full'}}) }}
-                <div id="surnameError" class="text-red-600 text-sm"></div>
-
-                {{ form_row(formClient.telephone, {'attr': {'id': 'telephone', 'class': 'text-sm p-2 border rounded w-full'}}) }}
-                <div id="telephoneError" class="text-red-600 text-sm"></div>
-
-                {{ form_row(formClient.adresse, {'attr': {'class': 'text-sm p-2 border rounded w-full'}}) }}
-
+                
+            {{ form_start(formClient) }}
+            {{ form_row(formClient.surname) }}
+            {{ form_row(formClient.telephone) }}
+            {{ form_row(formClient.adresse) }}
                 <div class="flex items-center justify-center mt-4">
                     <label for="addUser" class="inline-flex items-center">
                         <input type="checkbox" id="addUser" class="form-checkbox h-4 w-4 text-burgundy">
                         <span class="ml-2 text-gray-700 text-sm">Ajouter un utilisateur</span>
                     </label>
                 </div>
+            <div class="flex mt-6">
+                {{ form_widget(formClient.submit, { 'attr': {'class': 'bg-burgundy hover:bg-burgundy-dark text-white font-bold py-2 px-4 rounded'}}) }}
+            </div>
+            
+            {{ form_end(formClient) }}
             </form>
         </div>
 
-        <!-- Formulaire de l'utilisateur à droite, masqué par défaut -->
         <div id="userFields" class="bg-nude rounded-lg shadow-md p-4 w-full max-w-sm ml-6" style="display: none;">
             <h2 class="text-xl font-bold mb-2 text-gray-800 text-center">Ajout avec User</h2>
-
-            <form id="userForm">
-                {{ form_row(formUser.prenom, {'attr': {'id': 'prenom', 'class': 'text-sm p-2 border rounded w-full'}}) }}
-                <div id="prenomError" class="text-red-600 text-sm"></div>
-
-                {{ form_row(formUser.nom, {'attr': {'id': 'nom', 'class': 'text-sm p-2 border rounded w-full'}}) }}
-                <div id="nomError" class="text-red-600 text-sm"></div>
-
-                {{ form_row(formUser.login, {'attr': {'id': 'login', 'class': 'text-sm p-2 border rounded w-full'}}) }}
-                <div id="loginError" class="text-red-600 text-sm"></div>
-
-                {{ form_row(formUser.password, {'attr': {'id': 'mdp', 'class': 'text-sm p-2 border rounded w-full'}}) }}
-                <div id="passwordError" class="text-red-600 text-sm"></div>
-            </form>
+            {{ form_start(formUser) }}
+            {{ form_row(formUser.nom) }}
+            <div id="nomError" class="text-red-600 text-sm"></div>
+            {{ form_row(formUser.prenom) }}
+            <div id="prenomError" class="text-red-600 text-sm"></div>
+            {{ form_row(formUser.login) }}
+            <div id="loginError" class="text-red-600 text-sm"></div>
+            {{ form_row(formUser.password) }}
+            <div id="passwordError" class="text-red-600 text-sm"></div>
+            {{ form_end(formUser) }}
         </div>
+    </div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const addUserCheckbox = document.getElementById('addUser');
+        const userFields = document.getElementById('userFields');
+        const form = document.getElementById('clientForm');
+
+        const prenomInput = document.getElementById('prenom');
+        const nomInput = document.getElementById('nom');
+        const loginInput = document.getElementById('login');
+        const passwordInput = document.getElementById('mdp');
+
+        // Affichage du formulaire utilisateur si la case est cochée
+        addUserCheckbox.addEventListener('change', function () {
+            if (this.checked) {
+                userFields.style.display = 'block'; // Afficher les champs utilisateur
+            } else {
+                userFields.style.display = 'none';  // Masquer les champs utilisateur
+                // Effacer les champs utilisateur quand on décoche la case
+                prenomInput.value = '';
+                nomInput.value = '';
+                loginInput.value = '';
+                passwordInput.value = '';
+            }
+        });
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Empêche l'envoi par défaut
+
+            // Réinitialiser les messages d'erreur
+            document.getElementById('surnameError').innerText = '';
+            document.getElementById('telephoneError').innerText = '';
+            document.getElementById('prenomError').innerText = '';
+            document.getElementById('nomError').innerText = '';
+            document.getElementById('loginError').innerText = '';
+            document.getElementById('passwordError').innerText = '';
+
+            let isValid = true;
+
+            // Validation du champ "surname"
+            const surname = document.getElementById('surname').value.trim();
+            if (!surname) {
+                document.getElementById('surnameError').innerText = 'Le champ "surname" ne doit pas être vide.';
+                isValid = false;
+            }
+
+            // Validation du champ "telephone"
+            const telephone = document.getElementById('telephone').value.trim();
+            const phonePattern = /^(77|78|76)[0-9]{7}$/; // Regex pour le format de numéro de téléphone
+            if (!telephone) {
+                document.getElementById('telephoneError').innerText = 'Le champ "telephone" ne doit pas être vide.';
+                isValid = false;
+            } else if (!phonePattern.test(telephone)) {
+                document.getElementById('telephoneError').innerText = 'Entrer un numéro valide (77-XXX-XX-XX, 78-XXX-XX-XX, 76-XXX-XX-XX).';
+                isValid = false;
+            }
+
+            // Validation des champs utilisateur si la case est cochée
+            if (addUserCheckbox.checked) {
+                const prenom = prenomInput.value.trim();
+                const nom = nomInput.value.trim();
+                const login = loginInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                if (!prenom) {
+                    document.getElementById('prenomError').innerText = 'Le prénom est obligatoire.';
+                    isValid = false;
+                }
+                if (!nom) {
+                    document.getElementById('nomError').innerText = 'Le nom est obligatoire.';
+                    isValid = false;
+                }
+                if (!login) {
+                    document.getElementById('loginError').innerText = 'Le login est obligatoire.';
+                    isValid = false;
+                }
+                if (!password) {
+                    document.getElementById('passwordError').innerText = 'Le mot de passe est obligatoire.';
+                    isValid = false;
+                }
+            }
+
+            // Si le formulaire est valide, on le soumet
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    });
+</script>
+
+{% endblock %} #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une dette{% endblock %}
+
+{% block body %}
+    <h1 class="text-xl mb-6">Créer une Dette pour {{ client.surname }} {{ client.telephone }}</h1>
+
+    {{ form_start(formArticleSelection) }}
+
+    <div class="grid grid-cols-2 gap-4">
+        {% for child in formArticleSelection %}
+            {% if child.vars.name != 'submit' %}
+                <div>
+                    {{ form_widget(child) }}
+                    {{ child.vars.label }}
+                </div>
+            {% endif %}
+        {% endfor %}
     </div>
 
     <div class="flex justify-center mt-6">
-        <!-- Bouton de soumission à l'intérieur du formulaire -->
-        {# <button type="submit" form="clientForm" class="bg-burgundy hover:bg-burgundy-dark text-white font-bold py-1 px-3 rounded text-sm">
-            Ajouter
-        </button> #}
-         <div class="flex mt-6">
-                {{ form_widget(formClient.submit, { 'attr': {'class': 'bg-burgundy hover:bg-burgundy-dark text-white font-bold py-2 px-4 rounded'}}) }}
-        </div>
+        {{ form_widget(formArticleSelection.submit, {
+            'attr': {
+                'class': 'bg-burgundy text-white font-bold px-4 py-2 rounded hover:bg-red-700 transition duration-200'
+            }
+        }) }}
     </div>
 
+    {{ form_end(formArticleSelection) }}
 {% endblock %}

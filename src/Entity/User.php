@@ -5,9 +5,10 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Client;
-use Symfony\Bundle\FrameworkBundle\DependencyInjection\Compiler\UnusedTagsPass;
+use App\Enums\UserRole;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-
+#[UniqueEntity('login', message:'le login doit etre unique, already exist ')]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 class User implements PasswordAuthenticatedUserInterface

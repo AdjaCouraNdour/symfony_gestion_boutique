@@ -1,9 +1,8 @@
 <?php
 
-// src/Controller/ClientController.php
-
 namespace App\Controller;
 
+use App\Dto\ClientSearchDto;
 use App\Entity\Client;
 use App\Entity\User;
 use App\Repository\ClientRepository; 
@@ -25,23 +24,31 @@ class ClientController extends AbstractController
     #[Route('/client', name: 'client.index', methods:['GET','POST'])]
     public function index(ClientRepository $clientRepository, Request $request): Response 
     {
-        $formSearch = $this->createForm(SearchClientType::class);
+        $clientSearchDto=new ClientSearchDto();
+        $formSearch = $this->createForm(SearchClientType::class ,$clientSearchDto);
         $formSearch->handleRequest($request);
-        $page=$request->query->getInt('page',1);
-        $count=0;
-        $totalPages=0;
-        $limit=3;
+        $page=$request->query->getInt('page',1);$count=0;$totalPages=0;$limit=3;
         $telephone = null;
+        
+        $hasAccount = $request->query->get('hasAccount');
+        if ($hasAccount === '1') {
+            $clients = $clientRepository->findBy(['userr' => true]); 
 
-        if ($formSearch->isSubmitted($request) && $formSearch->isValid()){
-            $telephone = $formSearch->get('telephone')->getData();  
-            // $clients = $clientRepository->findBy(['telephone' => $formSearch->get('telephone')->getData()]);
+        } elseif ($hasAccount === '0') {
+            $clients = $clientRepository->findBy(['userr' => null]);
+
+        } elseif ($formSearch->isSubmitted($request) && $formSearch->isValid()){
+            // $clients = $clientRepository->findBy([
+            //     'telephone'=>$clientSearchDto->telephone,
+            //     'surname'=>$clientSearchDto->surname
+            // ]) ;
+            $clients = $clientRepository->findClientBy($clientSearchDto,$page,$limit) ;
+
+        }else{
+            $clients= $clientRepository->paginateClient($page,$limit);    
         }
-        // else{
-           $clients= $clientRepository->paginateClient($page,$limit,$telephone);
-            $count=$clients->count();
-            $totalPages=ceil($count / $limit);
-        // }
+        $count=$clients->count();
+        $totalPages=ceil($count / $limit);
 
         return $this->render('client/index.html.twig', [
             'telephone'=>$telephone,
@@ -50,64 +57,66 @@ class ClientController extends AbstractController
             'page'=>$page,
             'totalPages'=>$totalPages, 
         ]);
-
     }
     
+
     #[Route('/client/store', name: 'client.store', methods:['GET','POST'])]
 public function store(Request $request, EntityManagerInterface $entityManager): Response
 {
     $client = new Client();
     $user = new User(); 
-
+    // Création des formulaires
     $formClient = $this->createForm(ClientType::class, $client);
     $formUser = $this->createForm(UserType::class, $user);
 
+    // Gestion de la requête
     $formClient->handleRequest($request);
     $formUser->handleRequest($request);
 
+    // Si le formulaire client est soumis et valide
     if ($formClient->isSubmitted() && $formClient->isValid()) {
-
         $client->setBlocked(false);
         $client->setCreateAt(new \DateTimeImmutable());
         $client->setUpdateAt(new \DateTimeImmutable());
 
-        $addUser = $formClient->get('addUser')->getData(); 
+        // Récupérer la valeur du champ addUser
+        $addUser = $formClient->get('addUser')->getData();
 
-        if ($addUser && $formUser->isSubmitted() && $formUser->isValid()) {
-            $user->setBlocked(false);
-            $user->setCreateAt(new \DateTimeImmutable());
-            $user->setUpdateAt(new \DateTimeImmutable());
+        // Si l'utilisateur est à ajouter et que le formulaire utilisateur est soumis et valide
+        if ($addUser) {
+            if ($formUser->isSubmitted() && $formUser->isValid()) {
+                $user->setBlocked(false);
+                $user->setCreateAt(new \DateTimeImmutable());
+                $user->setUpdateAt(new \DateTimeImmutable());
 
-            $user->setClient($client);
-            $client->setUserr($user);
+                // Associer l'utilisateur au client
+                $user->setClient($client);
+                $client->setUserr($user);
 
-            $entityManager->persist($user);
+                // Sauvegarder l'utilisateur dans la base de données
+                $entityManager->persist($user);
+
+            } else {
+                // Si le formulaire utilisateur n'est pas valide, vous pouvez gérer cela comme vous le souhaitez
+                // Par exemple, vous pouvez afficher un message d'erreur ou simplement enregistrer le client sans l'utilisateur
+            }
         }
 
+        // Sauvegarder le client dans la base de données
         $entityManager->persist($client);
         $entityManager->flush();
 
+        // Rediriger vers la liste des clients
         return $this->redirectToRoute('client.index');
     }
 
+    // Si les formulaires ne sont pas valides ou non soumis, retourner la vue
     return $this->render('client/form.html.twig', [
         'formClient' => $formClient->createView(),
         'formUser' => $formUser->createView(),
     ]);
 }
 
-
-    #[Route('/client/show/{id}', name: 'client.showClientById', methods:['GET','POST'])]
-    public function showClientById(ClientRepository $clientRepository, int $id): Response
-    {
-        $clients = $clientRepository->findOneBy(['id' => $id]);
-        if (!$clients) {
-            throw $this->createNotFoundException('Client non trouvé');
-        }
-        return $this->render('client/show.html.twig', [
-            'datas' => $clients,          
-        ]);
-    }
 
 
     #[Route('/client/{id}/dettes', name: 'client.showClientDettesById', methods: ['GET'])]
@@ -147,7 +156,41 @@ public function store(Request $request, EntityManagerInterface $entityManager): 
             'articles' => $articles,
         ]);
     }
-    
+
+    #[Route('/client/search/compte', name: 'client.searchClientByCompte', methods:['GET'])]
+    public function searchClientByCompte(ClientRepository $clientRepository, Request $request): Response
+    {
+        $hasAccount = $request->query->get('hasAccount');
+        $clientSearchDto = new ClientSearchDto(); 
+        if ($hasAccount === '1') {
+            $clients = $clientRepository->findBy(['userr' => true]); 
+        } elseif ($hasAccount === '0') {
+            $clients = $clientRepository->findBy(['userr' => null]);
+        } else {
+            $clients = $clientRepository->findAll();
+        }
+        $page=$request->query->getInt('page',1);
+        $count=0;$totalPages=0;$limit=3;
+        $clients = $clientRepository->findClientBy($clientSearchDto,$page,$limit) ;     
+        return $this->render('client/index.html.twig', [
+            'datas' => $clients,
+            'page'=>$page,
+            'totalPages'=>$totalPages, 
+        ]);
+    }
+
+    #[Route('/client/show/{id}', name: 'client.showClientById', methods:['GET','POST'])]
+    public function showClientById(ClientRepository $clientRepository, int $id): Response
+    {
+        $clients = $clientRepository->findOneBy(['id' => $id]);
+        if (!$clients) {
+            throw $this->createNotFoundException('Client non trouvé');
+        }
+        return $this->render('client/show.html.twig', [
+            'datas' => $clients,          
+        ]);
+    }
+
     //path variable 
     //$_request : injonction de dependance
     // #[Route('/client/show/{id?}', name: 'client.show', methods:['GET'])]
@@ -157,28 +200,6 @@ public function store(Request $request, EntityManagerInterface $entityManager): 
     //         'datas' => $clients,        
     //     ]);
     // }
-
-
-    // #[Route('/client/create', name: 'client.create', methods:['GET', 'POST'])]
-    // public function create(Request $request): Response
-    // {
-    //     // Créer un nouveau DTO
-    //     $clientDto = new ClientDto();
-    //     // Utiliser le DTO dans le formulaire
-    //     $form = $this->createForm(ClientType::class, $clientDto);
-    //     $form->handleRequest($request);
-    //     if ($form->isSubmitted() && $form->isValid()) {
-    //         $surname = $clientDto->getSurname();
-    //         $telephone = $clientDto->getTelephone();
-    //         $adresse = $clientDto->getAdresse();
-    //         $this->addFlash('success', 'Client ajouté : ' . $clientDto->getSurname());
-    //         return $this->redirectToRoute('client.index');
-    //     }
-    //     return $this->render('client/form.html.twig', [
-    //         'formClient' => $form->createView(),
-    //     ]);
-    // }
-
 
     //query params
     // #[Route('/client/search/telephone', name: 'client.searchClientByTelephone', methods:['GET'])]
@@ -190,47 +211,14 @@ public function store(Request $request, EntityManagerInterface $entityManager): 
     //         'client' => $client, 
     //     ]);
     // }
-    
-    #[Route('/client/search/compte', name: 'client.searchClientByCompte', methods:['GET'])]
-    public function searchClientByCompte(ClientRepository $clientRepository, Request $request): Response
-    {
-        $hasAccount = $request->query->get('hasAccount');
 
-        if ($hasAccount === '1') {
-            $clients = $clientRepository->findBy(['userr' => true]); 
-        } elseif ($hasAccount === '0') {
-            $clients = $clientRepository->findBy(['userr' => null]);
-        } else {
-            $clients = $clientRepository->findAll();
-        }
-        [$clients, $totalPages, $currentPage] = $this->paginateByFiltre($clients, $request);
-        return $this->render('client/index.html.twig', [
-            'datas' => $clients,
-            'currentPage' => $currentPage,
-            'totalPages' => $totalPages,
-        ]);
-    }
-
-    #[Route('/client/remove/{id?}', name: 'client.remove', methods:['GET'])]
-    public function remove(int $id,ClientRepository $clientRepository, Request $request): Response
-    {
-        $clients=$clientRepository->findAll();
-        return $this->render('client/index.html.twig', [
-            'datas' => $clients,     
-        ]);
-    }
-    
-    private function paginateByFiltre(array $clients, Request $request, int $limit = 3): array
-    {
-        $page = $request->query->getInt('page', 1);
-        $offset = ($page - 1) * $limit;
-        
-        // S'assurer que nous paginons les clients filtrés
-        $paginatedClients = array_slice($clients, $offset, $limit);
-        $totalEntities = count($clients); // Utiliser le nombre total de clients filtrés
-        $totalPages = ceil($totalEntities / $limit);
-
-        return [$paginatedClients, $totalPages, $page];
-    }
+    // #[Route('/client/remove/{id?}', name: 'client.remove', methods:['GET'])]
+    // public function remove(int $id,ClientRepository $clientRepository, Request $request): Response
+    // {
+    //     $clients=$clientRepository->findAll();
+    //     return $this->render('client/index.html.twig', [
+    //         'datas' => $clients,     
+    //     ]);
+    // }
 
     }

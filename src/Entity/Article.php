@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enums\EtatArticle;
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -94,6 +95,9 @@ class Article
 
     public function getEtat(): ?EtatArticle 
     {
+        if ($this->qte_stock!=0 ) {
+            $this->etat = EtatArticle::disponible;
+        }
         return $this->etat;
     }
     

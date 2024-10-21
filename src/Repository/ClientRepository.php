@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Dto\ClientSearchDto;
 use App\Entity\Client;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -17,33 +18,43 @@ class ClientRepository extends ServiceEntityRepository
         parent::__construct($registry, Client::class);
     }
 
-    //    /**
-    //     * @return Client[] Returns an array of Client objects
-    //     */
-    //    public function paginateClient(int $page ,int $limit ,String $telephone): Paginator
-    //    {
-    //        $query = $this->createQueryBuilder('c')
-    //            ->setFirstResult(( $page - 1 ) * $limit)
-    //            ->setMaxResults($limit)
-    //            ->orderBy('c.id', 'ASC')
-    //            ->getQuery();
-    //         return new Paginator($query);
-    //    }
+        public function paginateClient(int $page, int $limit): Paginator
+        {
+            $query = $this->createQueryBuilder('c')
+                ->setFirstResult(($page - 1) * $limit)
+                ->setMaxResults($limit) 
+                ->orderBy('c.id', 'ASC') 
+                ->getQuery();
+            return new Paginator($query);
 
-public function paginateClient(int $page, int $limit, string $telephone = null): Paginator
-{
-    $queryBuilder = $this->createQueryBuilder('c')
-        ->setFirstResult(($page - 1) * $limit)
-        ->setMaxResults($limit) 
-        ->orderBy('c.id', 'ASC'); 
-    if ($telephone) {
-        $queryBuilder->andWhere('c.telephone LIKE :telephone')
-                     ->setParameter('telephone', '%' . $telephone . '%'); 
-    }
-    $query = $queryBuilder->getQuery();
-    return new Paginator($query);
-}
+            // if ($telephone) {
+            //     $queryBuilder->andWhere('c.telephone LIKE :telephone')
+            //                 ->setParameter('telephone', '%' . $telephone . '%'); 
+            // }
+            // $query = $queryBuilder->getQuery();
+        }
 
+        public function findClientBy(ClientSearchDto $clientSearchDto ,int $page, int $limit): Paginator
+           {
+            $query = $this->createQueryBuilder('c');
+            if (!empty($clientSearchDto->telephone)) {
+                $query->andWhere('c.telephone = :telephone')
+                      ->setParameter('telephone', $clientSearchDto->telephone); 
+            }
+            if (!empty($clientSearchDto->surname)) {
+                $query->andWhere('c.surname = :surname')
+                      ->setParameter('surname', $clientSearchDto->surname); 
+            }
+    
+            $query->orderBy('c.id', 'ASC')
+                ->setFirstResult(($page - 1) * $limit)
+                ->setMaxResults($limit) 
+                ->getQuery()
+                ->getResult()
+               ;
+            return new Paginator($query);
+
+           }
 
     //    public function findOneBySomeField($value): ?Client
     //    {

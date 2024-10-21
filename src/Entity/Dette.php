@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Enums\EtatDette;
+use App\Enums\TypeDette;
 use App\Repository\DetteRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -55,6 +57,7 @@ class Dette
     {
         $this->createAt = new \DateTimeImmutable(); 
         $this->updateAt = new \DateTimeImmutable(); 
+       
     }
     public function getMontant(): ?float
     {
@@ -93,6 +96,9 @@ class Dette
 
     public function getType(): ?TypeDette 
     {
+        if ($this->montantVerse!=0 && $this->montantVerse==$this->montant) {
+            $this->type = TypeDette::solde;
+        } 
         return $this->type;
     }
 

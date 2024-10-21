@@ -11,6 +11,10 @@ use App\Entity\EtatDette;
 use App\Entity\TypeDette;
 use App\Entity\User;
 use App\Entity\UserRole;
+use App\Enums\EtatArticle as EnumsEtatArticle;
+use App\Enums\EtatDette as EnumsEtatDette;
+use App\Enums\TypeDette as EnumsTypeDette;
+use App\Enums\UserRole as EnumsUserRole;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -26,43 +30,43 @@ class ClientFixtures extends Fixture
     {
         for ($i=1; $i <=4 ; $i++) {
             $client=new Client();   
-            $client -> setSurname('Surname'.$i);
+            $client -> setSurname('Mouha'.$i);
             $client -> setTelephone('77479947'.$i);
-            $client -> setAdresse('Adresse'.$i);
+            $client -> setAdresse('Diamalaye'.$i);
             if ($i % 2 == 0) {
                 $user= new User();
-                $user -> setNom('Nom'.$i);
-                $user -> setPrenom('Prenom'.$i);
-                $user -> setLogin('Login'.$i);
-                $plaintextPassword = "password";
+                $user -> setNom('Diop'.$i);
+                $user -> setPrenom('Mouhamed'.$i);
+                $user -> setLogin('mouha000@gmail'.$i.'.com');
+                $plaintextPassword = "hhh";
                 $hashedPassword = $this->encoder->hashPassword(
                     $user,
                     $plaintextPassword
                 );
                 $user->setPassword($hashedPassword);
-                $user->setRole($i % 4 == 0 ? UserRole::roleBoutiquier : UserRole::roleClient);
+                $user->setRole($i % 4 == 0 ? EnumsUserRole::roleBoutiquier : EnumsUserRole::roleClient);
                 $client->setUserr($user);
                 $manager->persist($user);
                 for ($j=1; $j <=2 ; $j++) {
                     $dette=new Dette();
-                    $dette->setMontant(2000);
-                    $dette->setMontantVerse(500);
+                    $dette->setMontant(1000);
+                    $dette->setMontantVerse(0);
                     $dette->setMontantRestant(0);
-                    $dette->setType($j % 4 == 0 ? TypeDette::solde : TypeDette::nonSolde);
-                    $dette->setEtat($j % 4 == 0 ? EtatDette::enCours : EtatDette::enCours);
+                    $dette->setType($j % 4 == 0 ? EnumsTypeDette::solde : EnumsTypeDette::nonSolde);
+                    $dette->setEtat($j % 4 == 0 ? EnumsEtatDette::enCours : EnumsEtatDette::enCours);
                     $client->addDette($dette);
                     $dette->setClient($client);
                     $manager->persist($dette);
                 
-                    for ($a=1; $a <=2 ; $a++) {
+                    for ($a=1; $a <=1 ; $a++) {
                         $article=new Article();
-                        $article->setReference('reference'.$a);
-                        $article->setLibelle('libelle'.$a);
+                        $article->setReference('0000'.$i);
+                        $article->setLibelle('Bonbon jina'.$i);
                         $article->setQteStock(10);
                         $article->setPrix(500);
-                        $article->setEtat($a % 4 == 0 ? EtatArticle::indisponible : EtatArticle::disponible);
+                        $article->setEtat($a % 4 == 0 ? EnumsEtatArticle::indisponible : EnumsEtatArticle::disponible);
                         $manager->persist($article);
-                        for ($a=1; $a <=2 ; $a++) {
+                        for ($a=1; $a <=1 ; $a++) {
                             $details=new Details();
                             $details->setQteDette(2);
                             $details->setArticle($article);
@@ -73,13 +77,13 @@ class ClientFixtures extends Fixture
                 } 
             }else{
                 $client->setUserr(null);
-                for ($j=1; $j <=2 ; $j++) {
+                for ($j=1; $j <=1 ; $j++) {
                     $dette=new Dette();
                     $dette->setMontant(2000);
                     $dette->setMontantVerse(1000);
                     $dette->setMontantRestant(0);
-                    $dette->setType($j % 4 == 0 ? TypeDette::solde : TypeDette::nonSolde);
-                    $dette->setEtat($j % 4 == 0 ? EtatDette::annule : EtatDette::enCours);
+                    $dette->setType($j % 4 == 0 ? EnumsTypeDette::solde : EnumsTypeDette::nonSolde);
+                    $dette->setEtat($j % 4 == 0 ? EnumsEtatDette::annule : EnumsEtatDette::enCours);
                     $client->addDette($dette);
                     $dette->setClient($client);
                 } 

@@ -2,11 +2,12 @@
 
 namespace App\Form;
 
+use App\Dto\ClientSearchDto;
+use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
@@ -18,27 +19,35 @@ class SearchClientType extends AbstractType
     {
         $builder
         ->add('telephone', TextType::class, [
-            'label' => 'Telephone', 
             'required' => false,
+            'empty_data'=>'',
             'attr' =>[
                 'placeholder' =>'774799479',
-                // 'pattern' => '^([77|78|76])[0-9]{7}$',
-                // 'class'=>'text-danger',
+                'id'=>'telephone',
             ],
             'constraints'=>[
-                
-                new NotBlank([
-                    'message'=>'renseigner un telephone valide.',
-                ]),
                 new Regex(
                     '/^(77|78|76)([0-9]{7})$/',
                     'le numero doit etre de form  77-XXX-XX-XX /78 /76 ',
-                ),
+                )]
+        ])
+        ->add('surname', TextType::class, [
+            'required' => false,
+            'empty_data'=>'',
+            'attr' =>[
+                'placeholder' =>'Surname',
+                'id'=>'surname',
+            ],
+            'constraints'=>[  
+                new NotNull([
+                    'message'=>'le surname ne peut pas etre vide.',
+                ]),  
             ]
-        ]) 
+        ])
+
         ->add('rechercher', SubmitType::class, [
             'label' => 'Search',
-            'attr' => ['class' => 'bg-burgundy text-white text-sm px-3 rounded-r-md h-10 hover:bg-red-700']
+            'attr' => ['class' => 'bg-burgundy ml-2 text-white text-sm px-3 rounded h-10 hover:bg-red-700']
         ])       
         ;
     }
@@ -46,7 +55,7 @@ class SearchClientType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            // Configure your form options here
+           'data_class' => ClientSearchDto::class,
         ]);
     }
 }

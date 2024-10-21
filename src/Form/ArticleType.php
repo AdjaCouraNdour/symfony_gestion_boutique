@@ -3,12 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Article;
-use App\Entity\EtatArticle;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotNull;
@@ -27,7 +24,7 @@ class ArticleType extends AbstractType
                     ]),
                 ]])
             ->add('qte_stock',TextType::class, [
-                'label' => 'reference', 
+                'label' => 'qteStock', 
                 'required' => false, 
                 'constraints' => [
                     new NotNull([ 

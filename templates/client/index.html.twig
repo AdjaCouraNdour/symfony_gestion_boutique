@@ -13,20 +13,24 @@
             <div class="flex justify-between mb-2">
                
                 {{ form_start(formSearch )}}
-                <div class ='mb-1 text-red-600' >
-                {{ form_errors(formSearch.telephone) }}
-                </div>
-                <div class ='mb-4 flex items-center'>
+                
+                <div class ='mb-4 flex items-center justify-between '>
                     {{ form_widget(formSearch.telephone , {'attr': {
-                        'class':'border border-gray-300 p-2 rounded-l-md h-10'
+                        'class':'border ml-2 border-gray-300 p-2 rounded h-10'
+                    }}) }}
+                    {{ form_widget(formSearch.surname , {'attr': {
+                        'class':'border ml-2 border-gray-300 p-2 rounded h-10'
                     }}) }}
                     {{ form_widget(formSearch.rechercher)}}
                 </div>
-                    
+
+                <div class ='mb-1 text-red-600' >
+                    {{ form_errors(formSearch.telephone) }}
+                </div>    
 
                 {{ form_end(formSearch )}}
 
-                <form method="GET" action="{{ path('client.searchClientByCompte') }}" class="mb-4 flex items-center">
+                <form method="GET" action="{{ path('client.index') }}" class="mb-4 flex items-center">
                     <select name="hasAccount" class="border border-gray-300 h-10" onchange="this.form.submit()">
                         <option value="">filtrer par compte</option>
                         <option value="1">Avec</option>
